@@ -3,13 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "sonner";
+import { UserContext } from "../providers/UserProvider";
+import { useRouter } from "next/navigation";
 
 const SingInPage = () => {
+  const { user, setUser } = useContext(UserContext);
+  const router = useRouter();
+
   const [passwordShown, setPasswordShown] = useState(false);
   const [credential, setCredential] = useState("");
   const [password, setPassword] = useState("");
+
+  if (user) {
+    router.replace("/");
+  }
 
   const handleSignin = async () => {
     const response = await fetch("http://localhost:5500/signin", {
@@ -24,6 +33,7 @@ const SingInPage = () => {
 
     if (response.ok) {
       toast.success(data.message);
+      setUser(data.body);
     } else {
       toast.error(data.message);
     }
