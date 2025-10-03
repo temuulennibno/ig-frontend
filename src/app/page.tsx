@@ -2,21 +2,25 @@
 
 import { useContext } from "react";
 import { UserContext } from "./providers/UserProvider";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  const { user, setUser } = useContext(UserContext);
-  const router = useRouter();
+  const { user, setToken, loading } = useContext(UserContext);
+
+  console.log({ user, loading });
+
+  if (loading) {
+    return <>Loading....</>;
+  }
 
   if (!user) {
-    router.replace("/signin");
+    return redirect("/signin");
   }
 
   const handleLogout = () => {
-    setUser(null);
+    setToken(null);
   };
-
   return (
     <div>
       Welcome home page: {user?.fullname} <Button onClick={handleLogout}>Logout</Button>
