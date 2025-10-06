@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`bg-black text-white ${geistSans.variable} ${geistMono.variable} antialiased`}>
         <UserContextProvider>{children}</UserContextProvider>
         <Toaster />
       </body>

@@ -60,6 +60,8 @@ export const UserContextProvider = ({ children }: React.PropsWithChildren) => {
     if (token) {
       localStorage.setItem("authToken", JSON.stringify(token));
       authenticateUser();
+    } else {
+      setLoading(false);
     }
   }, [token]);
 
