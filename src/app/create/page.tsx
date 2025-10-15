@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,27 +8,42 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useUser } from "../providers/UserProvider";
+import axios from "axios";
 
 const Page = () => {
-  const [imageUrl, setImageUrl] = useState("");
+  const [prompt, setPrompt] = useState("");
   const [description, setDescription] = useState("");
   const router = useRouter();
+  const { token } = useUser();
 
   const handleSubmit = async () => {
-    const response = await fetch("http://localhost:5500/posts", {
-      method: "POST",
-      body: JSON.stringify({ imageUrl, description }),
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    });
+    // const response = await fetch("http://localhost:5500/posts", {
+    //   method: "POST",
+    // body: JSON.stringify({ imageUrl: prompt, description }),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Accept: "application/json",
+    //     Authorization: "Bearer " + token,
+    //   },
+    // });
+    // const data = await response.json();
+    // if (response.status !== 200) {
+    //   toast.error(data.message);
+    //   return;
+    // }
 
-    const data = await response.json();
-    if (response.status !== 200) {
-      toast.error(data.message);
-      return;
-    }
+    const response = await axios.post(
+      "http://localhost:5500/posts",
+      { imageUrl: prompt, description },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+
+    console.log(response);
 
     toast.success("Post created successfully!");
     router.push("/");
@@ -45,7 +61,8 @@ const Page = () => {
         </Button>
       </div>
       <div className="py-4 flex flex-col gap-4">
-        <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="Image url..." />
+        <Input value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Image url..." />
+        {/* <Button onClick={generateImage}>Gen image</Button> */}
         <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description..." />
       </div>
     </div>

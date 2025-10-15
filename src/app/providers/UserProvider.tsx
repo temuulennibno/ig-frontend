@@ -1,7 +1,7 @@
 "use client";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
-type User = {
+export type User = {
   _id: string;
   username: string;
   fullname: string;
@@ -66,4 +66,9 @@ export const UserContextProvider = ({ children }: React.PropsWithChildren) => {
   }, [token]);
 
   return <UserContext.Provider value={{ user, token, loading, setToken }}>{children}</UserContext.Provider>;
+};
+
+export const useUser = () => {
+  const ctx = useContext(UserContext);
+  return ctx;
 };
