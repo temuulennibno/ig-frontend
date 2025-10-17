@@ -1,21 +1,11 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import { User, UserContext } from "./providers/UserProvider";
+import { UserContext } from "./providers/UserProvider";
 import { redirect } from "next/navigation";
 import { Navbar } from "./components/Navbar";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-
-dayjs.extend(relativeTime);
-
-type Post = {
-  _id: string;
-  imageUrl: string;
-  description: string;
-  createdAt: string;
-  createdBy: User;
-};
+import { Post } from "./types";
+import { PostCard } from "./components/PostCard";
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -43,17 +33,7 @@ export default function Home() {
 
       <div className="w-[600px] flex flex-col gap-4 mx-auto">
         {posts.map((post) => (
-          <div key={post._id} className="mb-4 border-b py-4">
-            <div className="flex justify-between">
-              <div className="font-bold">{post.createdBy.username}</div>
-              {/* MM -> 05 */}
-              {/* M -> 5 */}
-              {/* <div className="font-bold">{dayjs(post.createdAt).format("YYYY/MM/D hh:mm")}</div> */}
-              <div className="font-bold">{dayjs(post.createdAt).fromNow()}</div>
-            </div>
-            <img src={post.imageUrl} alt="" />
-            {post.description}
-          </div>
+          <PostCard key={post._id} post={post} />
         ))}
       </div>
     </div>

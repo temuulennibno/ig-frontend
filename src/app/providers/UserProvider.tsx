@@ -1,15 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-
-export type User = {
-  _id: string;
-  username: string;
-  fullname: string;
-  password: string;
-
-  email: string | null;
-  phone: string | null;
-};
+import { User } from "../types";
 
 type UserContextType = {
   user: User | null;
