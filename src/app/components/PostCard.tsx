@@ -1,23 +1,34 @@
-import axios from "axios";
 import { Post } from "../types";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { useState } from "react";
-import { useUser } from "../providers/UserProvider";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Heart } from "lucide-react";
+import { useAxios } from "../hooks/useAxios";
+import { useUser } from "../providers/UserProvider";
 dayjs.extend(relativeTime);
 
 export const PostCard = ({ post }: { post: Post }) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(post.likes.length);
+  const [totalComments, setTotalComments] = useState(3);
+
+  const axios = useAxios();
+
   const [text, setText] = useState("");
   const [comments, setComments] = useState(post.comments);
-  const { token } = useUser();
+
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (user) {
+      const userId = user._id;
+      setIsLiked(post.likes.some((like) => like.createdBy._id === userId));
+    }
+  }, [user]);
 
   const handleSubmitComment = async () => {
-    const response = await axios.post(
-      `http://localhost:5500/posts/${post._id}/comments`,
-      { text },
-      { headers: { Authorization: "Bearer " + token } }
-    );
+    const response = await axios.post(`/posts/${post._id}/comments`, { text });
 
     if (response.status === 200) {
       setText("");
@@ -34,13 +45,42 @@ export const PostCard = ({ post }: { post: Post }) => {
         <div className="font-bold">{dayjs(post.createdAt).fromNow()}</div>
       </div>
       <img src={post.imageUrl} alt="" />
+      <div className="flex">
+        <div
+          className="hover:opacity-60 cursor-pointer"
+          onClick={async () => {
+            const response = await axios.post(`/posts/${post._id}/like`);
+            setIsLiked(response.data.isLiked);
+
+            if (response.data.isLiked) {
+              setLikeCount(likeCount + 1);
+            } else {
+              setLikeCount(likeCount - 1);
+            }
+          }}
+        >
+          {isLiked ? <Heart fill="red" stroke="red" /> : <Heart />}
+        </div>
+      </div>
+      <div>{likeCount} likes</div>
+      <hr />
       <b>{post.createdBy.username}</b> {post.description}
-      {comments.map((comment) => (
+      {comments.slice(0, totalComments).map((comment) => (
         <div key={comment._id}>
           <b>{comment.createdBy.username}: </b>
           {comment.text}
         </div>
       ))}
+      {comments.length > 3 && (
+        <div
+          onClick={() => {
+            setTotalComments(100);
+          }}
+          className="hover:underline cursor-pointer"
+        >
+          View all comments
+        </div>
+      )}
       <div className="relative">
         <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Add a comment" className="w-full resize-none" rows={1} />
         {text.length > 0 && (
