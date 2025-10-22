@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Heart } from "lucide-react";
 import { useAxios } from "../hooks/useAxios";
 import { useUser } from "../providers/UserProvider";
+import Link from "next/link";
 dayjs.extend(relativeTime);
 
 export const PostCard = ({ post }: { post: Post }) => {
@@ -41,7 +42,9 @@ export const PostCard = ({ post }: { post: Post }) => {
   return (
     <div key={post._id} className="mb-4 border-b py-4">
       <div className="flex justify-between">
-        <div className="font-bold">{post.createdBy.username}</div>
+        <Link href={`/${post.createdBy.username}`}>
+          <div className="font-bold">{post.createdBy.username}</div>
+        </Link>
         <div className="font-bold">{dayjs(post.createdAt).fromNow()}</div>
       </div>
       <img src={post.imageUrl} alt="" />
@@ -64,7 +67,10 @@ export const PostCard = ({ post }: { post: Post }) => {
       </div>
       <div>{likeCount} likes</div>
       <hr />
-      <b>{post.createdBy.username}</b> {post.description}
+      <Link href={`/${post.createdBy.username}`}>
+        <b>{post.createdBy.username}</b>
+      </Link>{" "}
+      {post.description}
       {comments.slice(0, totalComments).map((comment) => (
         <div key={comment._id}>
           <b>{comment.createdBy.username}: </b>
